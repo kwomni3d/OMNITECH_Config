@@ -1,0 +1,3 @@
+
+sudo cp -r /opt/dsf/tech_config/* /opt/dsf/sd
+sudo chown -R dsf:dsf /opt/dsf/sd/ /opt/dsf/tech_config

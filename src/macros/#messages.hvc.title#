@@ -1,0 +1,86 @@
+M1291 C1 T8 D0
+M291 R"#messages.hvc.title#" P"#messages.pressOKToBegin#" S3
+M1291 C1 T8 D0
+M291 R"#messages.hvc.title#" P"#messages.makeSureAllClean#" S3
+
+M1291 C2 T8 D5
+M291 R"#messages.hvc.title#" P"#messages.toolHeatup#" S0 T90
+
+M98 P"/sys/procedures/prepare-for-calibration.g" S0
+M98 P"/sys/procedures/prepare-for-calibration.g" S1
+	
+M116 P0 S10                                                ; wait to reach temperature
+M116 P1 S10                                                ; wait to reach temperature
+
+M291 R"#messages.hvc.title#" P"#messages.homeAxes#XY#" S0 T40
+
+if !move.axes[0].homed                                     ; conditional X homing
+	M1291 C3 T8 D5
+	M291 R"#messages.hvc.title#" P"#messages.home#X#" S0 T90
+	G28 X
+if !move.axes[1].homed                                     ; conditional Y homing
+	M1291 C3 T8 D5
+	M291 R"#messages.hvc.title#" P"#messages.home#Y#" S0 T90
+	G28 Y
+
+
+;home Z, then go to next step 
+M1291 C3 T8 D5
+M291 R"#messages.hvc.title#" P"#messages.home#Z#" S0 T90
+G28 Z
+
+;Clean T1 (tool 0 was cleaned and cooled down during home Z procedure)
+M1291 C4 T8 D5 
+M291 R"#messages.hvc.title#"  P"#messages.clean.right.cleaning#" S0
+
+T1 P0
+M98 P"/sys/machine-specific/head0-up.g"
+M98 P"/sys/machine-specific/go-to-cleaning-location.g"
+M98 P"/sys/machine-specific/clean.g"
+
+M1291 C5 T8 D5 
+M291 R"#messages.hvc.title#" P"#messages.hvc.probingTool#0#" S0 T90
+
+T0 P0                                                      ; select left tool
+M98 P"/sys/machine-specific/head0-down.g"
+M98 P"/sys/t0-zoffset.g"                                   ; load G31 z offset
+M98 P"/sys/machine-specific/go-to-platform-center.g"
+
+G92 Z575                                                   ; allows a long movement
+M718 P0 S0                                                 ; disable z-probe watchdog
+G30 Z-99999                                                ; single Z-probe
+M718 P0 S1                                                 ; enable z-probe watchdog
+
+M1291 C6 T8 D5
+M291 R"#messages.hvc.title#" P"#messages.calibrating#" S0 T45
+
+T1 P0
+M98 P"/sys/machine-specific/head0-up.g"
+M208 S1 Z-5.000                                            ; set axis max travel
+G31 Z0                                                     ; set 0.0mm Z trigger offset
+M98 P"/sys/t1-zoffset.g"                                   ; load G31 z offset
+M98 P"/sys/machine-specific/go-to-platform-center.g"
+
+M106 P1 S1
+M116 P1 S10                                                ; wait to reach probing temperature
+M106 P1 S0
+
+G30 K1 Z-999 S-2                                           ; single Z-probe
+G0 Z15
+G4 S1
+
+T0 P0
+M98 P"/sys/machine-specific/head0-down.g"
+
+; get offset from object model and write it into startup-z-offset.g file
+M1291 C7 T8 D-1
+M291 R"#messages.hvc.title#" P"#messages.hvc.saving#" S0 T45
+echo > "/sys/startup-z-offset.g" "G10 P1 Z"^{tools[1].offsets[2]}
+G4 S1
+
+M98 P"/sys/machine-specific/go-to-cleaning-location.g"
+
+M1291 C8 T8 D-1
+M291 R"#messages.hvc.title#" P"#messages.completed#" S2
+
+M1293

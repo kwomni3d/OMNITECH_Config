@@ -1,0 +1,5 @@
+Package: omnitech-config
+Version: 1.7
+Architecture: arm64
+Maintainer: Adam Wasilewski <awa@omni3d.net>
+Description: OmniTECH configuration for Duet3MH6XD

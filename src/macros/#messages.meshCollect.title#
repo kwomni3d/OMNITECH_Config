@@ -1,0 +1,34 @@
+M1291 C1 T6 D0
+M291 R"#messages.meshCollect.title#" P"#messages.pressOKToBegin#" S3
+M1291 C1 T6 D0
+M291 R"#messages.meshCollect.title#" P"#messages.makeSureAllClean#" S3
+M1291 C2 T6 D0
+M291 R"#messages.meshCollect.title#" P"#messages.toolHeatup#" S0 T90
+
+M98 P"/sys/procedures/prepare-for-calibration.g" S0
+M116 P1 S10 				; wait to reach temperature
+
+M291 R"#messages.meshCollect.title#" P"#messages.homeAxes#XY#" S0 T40
+
+if !move.axes[0].homed					; conditional X homing
+	M1291 C3 T6 D0
+	M291 R"#messages.meshCollect.title#" P"#messages.home#X#" S0 T90
+	G28 X
+if !move.axes[1].homed					; conditional Y homing
+	M1291 C3 T6 D0
+	M291 R"#messages.meshCollect.title#" P"#messages.home#Y#" S0 T90
+	G28 Y
+
+T0 P0															; select left tool
+M98 P"/sys/machine-specific/head0-down.g"
+;G28 Z								;standard Z homing
+M1291 C5 T6 D0 
+M291 R"#messages.meshCollect.title#" P"#messages.meshCollect.collecting#" S0 T300
+G29 S0
+M98 P"/sys/machine-specific/go-to-cleaning-location.g"
+M1291 C6 T6 D0
+M291 R"#messages.meshCollect.title#" P"#messages.completed#" S2
+G91
+G1 Z20 F600
+G90
+M1293

@@ -1,0 +1,17 @@
+*.csv
+log*
+sys/TMP
+src/sys/resurrect.g
+src/sys/dwc-settings.json
+*.deb
+src/sys/startup-xy-offset.g
+src/sys/startup-z-offset.g
+src/sys/startup-z-pos.g
+src/sys/config.g.bak
+src/sys/resurrect.g
+src/sys/t0-zoffset.g
+src/sys/t1-zoffset.g
+src/sys/resurrect.g
+src/sys/object_model*
+src/sys/Cooldown/*
+src/sys/config-override.g

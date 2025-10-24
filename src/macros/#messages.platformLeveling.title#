@@ -1,0 +1,70 @@
+M1291 C1 T8 D-1
+M291 R"#messages.platformLeveling.title#" P"#messages.pressOKToBegin#" S3
+M1291 C1 T8 D-1
+M291 R"#messages.platformLeveling.title#" P"#messages.makeSureAllClean#" S3
+
+M1291 C2 T6 D0
+M291 R"#messages.platformLeveling.title#" P"#messages.toolHeatup#" S0 T300
+
+M98 P"/sys/procedures/prepare-for-calibration.g" S0
+M116 P0 S10 				; wait to reach temperature
+
+M1291 C3 T8 D-1
+M291 R"#messages.platformLeveling.title#" P"#messages.homeAxes#XY#" S0 T300
+
+M98 P"/sys/machine-specific/bed-down.g"
+	
+if !move.axes[0].homed					; conditional X homing
+	M1291 C3 T8 D-1
+	M291 R"#messages.platformLeveling.title#" P"#messages.home#X#" S0 T300
+	G28 X
+if !move.axes[1].homed					; conditional Y homing
+	M1291 C3 T8 D-1
+	M291 R"#messages.platformLeveling.title#" P"#messages.home#Y#" S0 T300
+	G28 Y
+if !move.axes[2].homed					; conditional Z homing
+	M1291 C3 T8 D-1
+	M291 R"#messages.platformLeveling.title#" P"#messages.home#Z#" S0 T300
+	T0 P0
+	M98 P"/sys/machine-specific/head0-down.g"
+	M98 P"/sys/machine-specific/go-to-cleaning-location.g"
+	M98 P"/sys/machine-specific/clean.g"
+
+	M98 P"/sys/machine-specific/go-to-platform-center.g"
+	G30 Z-800
+	G1 Z10 F1500
+else
+	M1291 C3 T8 D-1
+	M291 R"#messages.platformLeveling.title#" P"#messages.clean.left.cleaning#" S0 T300
+	T0 P0
+	M98 P"/sys/machine-specific/head0-down.g"
+	M98 P"/sys/machine-specific/go-to-cleaning-location.g"
+	M116 P0 S10 				; wait to reach temperature
+	M98 P"/sys/machine-specific/clean.g"
+
+M1291 C4 T8 D0
+M291 R"#messages.platformLeveling.title#" P"#messages.platformLeveling.removingMesh#" S0 T300
+G4 P2000
+M561                                  	; clear any bed transform
+M30 "/sys/heightmap.csv"					; remove current mesh
+
+M1291 C5 T8 D0
+M291 R"#messages.platformLeveling.title#" P"#messages.platformLeveling.firstPass#" S0 T300
+M98 P"/sys/machine-specific/probe-platform-points.g"
+
+M1291 C6 T8 D0
+
+M1291 C7 T8 D0
+M291 R"#messages.platformLeveling.title#" P"#messages.home#Z#" S0 T300
+M98 P"/sys/machine-specific/go-to-platform-center.g"
+
+G30 Z-800
+G1 Z10 F1500
+;restore temps
+;M568 P0 A2 S{var.t0_temperature} R{var.t0_temperature} 
+
+M98 P"/sys/machine-specific/go-to-cleaning-location.g"
+M1291 C8 T8 D0
+M291 R"#messages.platformLeveling.title#" P"#messages.completed#" S2
+
+M1293
