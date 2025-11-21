@@ -1,10 +1,14 @@
+; run before tool is activated
 
-;if move.axes[2].homed
-;	G91					; relative positioning
-;	G1 Z{10 + tools[1].offsets[2]} F2000 
-;	set global.bed_down_for_procedure = true
-;	G90					; absolute positioning
-M98 P"/sys/machine-specific/bed-down.g"
-M98 P"/sys/machine-specific/head0-down.g"
+M208 T0							; Adjust workplace
 
-M208 S1 Z0				; set axis max travel
+M42 P7 S0						; Enable servo converter
+
+G91				       	 		; Relative mode
+G1 Z5 F2000 H2		         			; move bed down
+G90							; absolute mode
+
+M280 P8 S96.2						; Make move
+G4 P1000						; Wait...
+
+M42 P7 S1						; Disable servo converter

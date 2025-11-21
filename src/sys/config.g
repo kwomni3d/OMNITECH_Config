@@ -57,7 +57,7 @@ M950 P6 C"10.out4" Q1                                                     ; crea
 
 M715 P4:5:6                                                               ; Configure signal tower
 
-M950 P12 C"10.out2"                                                       ; configure print cooling fans and tower power supply
+;M950 P12 C"10.out2"                                                       ; configure print cooling fans and tower power supply
 M42 P12 S0
 
 ; Left Nozzle
@@ -106,38 +106,31 @@ M106 P2 S0
 M711 H4 F2
 
 ;Servo
-M950 P7 C"10.io3.out"
-M950 S8 C"!10.out2" Q333
+M950 P7 C"10.out8"
+M950 S8 C"!10.io2.out" Q333
 M42 P7 S0
 M42 P8 S80
 
 ; ON / OFF button, MISC and auto save on power loss
-M80 C"!0.out7"                                                            ; power switch output	
-M950 J0 C"0.io5.in"                                                       ; power button input
+M80 C"!0.out5"                                                            ; power switch output	
+M950 J0 C"0.io1.in"                                                       ; power button input
 M581 T3 P0 S1 R0                                                          ; power button trigger
-M950 J1 C"0.io4.in"                                                       ; 230V detect input
+M950 J1 C"0.io0.in"                                                       ; 230V detect input
 ;M581 T4 P4 S0 R0										; 230V detect trigger
 M911 S22 R23 P"M913 X0 Y0 Z0 E0"
 
-;front door electromagnet
-M950 P9 C"52.out0"
-M42 P9 S0
-
 ;bolts
-M950 P10 C"41.out0"                                                       ;top front
-M950 P11 C"41.out1"                                                       ;top back
+M950 P10 C"0.out8"                                                       ;top
+M950 P11 C"0.out9"                                                       ;front
 M42 P10 S0
-M42 P10 S0
+M42 P11 S0
 M712 P10 S13                                                              ;automatic closing
 M712 P11 S14
 
 ;coolant sensors
-M950 J2 C"^0.io2.in"                                                      ; pump A low level
-M950 J3 C"^0.io3.in"                                                      ; pump A extremely low level
-M950 J4 C"^0.io6.in"                                                      ; pump B low level
-M950 J5 C"^0.io7.in"                                                      ; pump B extremely low level
+M950 J2 C"^0.io2.in"                                                      ; low level
 
-M581 T5 P3:5 S0 R0                                                        ; extremely low level trigger
+M581 T5 P2 S0 R0                                                        ; extremely low level trigger
 
 global drives_A_switched = false
 global drives_B_switched = false
@@ -145,21 +138,16 @@ M98 P"/sys/configure-tools.g"
 ;reset offsets
 G10 P0 X0 Y0 Z0
 G10 P1 X0 Y0 Z0
-G10 P2 X0 Y0 Z0
-G10 P3 X0 Y0 Z0
 
 ;Power management
 M710 T3000
 M710 H2 S2 P770                                                           ;bed
 M710 H3 S2 P800
 M710 H4 S1 P2650                                                          ;chamber
-M710 H5 S3 P320                                                           ;filament chambers
-M710 H6 S3 P320
 
 ;door sensors
-M950 J12 C"^52.io1.in"                                                    ;front door - works only when electromagnet active
-M950 J13 C"^41.io0.in"                                                    ;top front
-M950 J14 C"^41.io1.in"                                                    ;top back
+M950 J12 C"^0.io3.in"                                                    ;front door
+M950 J13 C"^0.io4.in"                                                    ;top door
 
 ;Check if offsets file exists, else create them with default values
 M98 P"load-offset-files.g" S"t0-zoffset.g"
@@ -229,7 +217,7 @@ M576 S100 F20 P16
 ;Enable accelerometer and input shaping
 M955 P20.0 I24
 ;Configure pressure advance
-M572 D0:1:2:3:4:5 S0.062
+M572 D0:1 S0.062
 ;show coolant warning message
 M98 P"/sys/procedures/check-coolant.g"
 ; Configure Input Shaping
